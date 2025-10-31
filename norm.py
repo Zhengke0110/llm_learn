@@ -35,11 +35,11 @@ batch_norm_std = input.std(dim=(0, 1), keepdim=True, unbiased=False)
 batch_norm_input_1 = (input - batch_norm_mean) / (batch_norm_std + 1e-5)
 
 # ==================== BatchNorm 结果输出 ====================
-print("BatchNorm1d API output:\n", batch_norm_input_api)
-print("BatchNorm1d manual output:\n", batch_norm_input_1)
+# print("BatchNorm1d API output:\n", batch_norm_input_api)
+# print("BatchNorm1d manual output:\n", batch_norm_input_1)
 
 
-print("=" * 100)
+# print("=" * 100)
 
 # ==================== 方法3：使用PyTorch API进行层归一化 ====================
 # LayerNorm (层归一化) 与 BatchNorm 的核心区别：
@@ -85,10 +85,10 @@ layer_norm_std = input.std(dim=-1, keepdim=True, unbiased=False)
 # 每个位置的5个特征会被独立归一化为均值0、标准差1
 layer_norm_input_1 = (input - layer_norm_mean) / (layer_norm_std + 1e-5)
 
-print("LayerNorm API output:\n", batch_norm_api)
-print("LayerNorm manual output:\n", layer_norm_input_1)
+# print("LayerNorm API output:\n", batch_norm_api)
+# print("LayerNorm manual output:\n", layer_norm_input_1)
 
-print("=" * 100)
+# print("=" * 100)
 
 # ==================== RMSNorm (Root Mean Square Normalization) ====================
 # RMSNorm 是 LayerNorm 的简化版本，由 Zhang 和 Sennrich 在 2019 年提出
@@ -158,4 +158,4 @@ class RMSNorm(nn.Module):
 
 
 rns_norm = RMSNorm(dim)
-print("RMSNorm output:\n", rns_norm(input))
+# print("RMSNorm output:\n", rns_norm(input))

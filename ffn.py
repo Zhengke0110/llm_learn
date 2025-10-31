@@ -25,8 +25,8 @@ class FeedForward(nn.Module):
         return self.w2(F.silu(self.w1(x)) * self.w3(x))
 
 
-ffn = FeedForward(dim=512, hidden_dim=2048, multiple_of=64, ffn_dim_multiplier=1)
-x = torch.randn(32, 100, 512)
-output = ffn(x)
+# ffn = FeedForward(dim=512, hidden_dim=2048, multiple_of=64, ffn_dim_multiplier=1)
+# x = torch.randn(32, 100, 512)
+# output = ffn(x)
 
-print(output.shape)  # Expected output shape: (32, 100, 512)
+# print(output.shape)  # Expected output shape: (32, 100, 512)

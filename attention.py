@@ -155,26 +155,26 @@ def create_mask(seq_len, n_heads):
     return mask
 
 
-args = ModelArgs(dim=512, n_heads=8, max_batch_size=32, max_seq_len=200)
+# args = ModelArgs(dim=512, n_heads=8, max_batch_size=32, max_seq_len=200)
 
-attention = Attention(args)
+# attention = Attention(args)
 
-x = torch.randn(1, 50, 512)  # 输入: [batch=1, seq_len=50, dim=512]
+# x = torch.randn(1, 50, 512)  # 输入: [batch=1, seq_len=50, dim=512]
 
-# 创建Mask
-mask = create_mask(50, args.n_heads)  # [8, 50, 50]
-mask = mask.unsqueeze(0).expand(1, -1, -1, -1)  # 扩展batch维度: [1, 8, 50, 50]
+# # 创建Mask
+# mask = create_mask(50, args.n_heads)  # [8, 50, 50]
+# mask = mask.unsqueeze(0).expand(1, -1, -1, -1)  # 扩展batch维度: [1, 8, 50, 50]
 
-# 预计算旋转位置编码
-freqs_cis = precompute_cis(
-    dim=args.dim // args.n_heads, end=args.max_seq_len * 2
-)  # [400, 32]
+# # 预计算旋转位置编码
+# freqs_cis = precompute_cis(
+#     dim=args.dim // args.n_heads, end=args.max_seq_len * 2
+# )  # [400, 32]
 
-freqs_cis_1 = freqs_cis[:50, :]  # 取前50个位置: [50, 32]
+# freqs_cis_1 = freqs_cis[:50, :]  # 取前50个位置: [50, 32]
 
-# 第一次前向传播
-output = attention(
-    x, start_pos=0, freqs_cis=freqs_cis_1, mask=mask
-)  # 输出: [1, 50, 512]
+# # 第一次前向传播
+# output = attention(
+#     x, start_pos=0, freqs_cis=freqs_cis_1, mask=mask
+# )  # 输出: [1, 50, 512]
 
-print(output.shape)  # [1, 50, 512]
+# print(output.shape)  # [1, 50, 512]
