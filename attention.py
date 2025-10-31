@@ -85,7 +85,10 @@ class Attention(nn.Module):
         bz, seq_len, _ = x.shape  # 输入: [batch, seq_len, dim] = [1, 50, 512]
 
         # 线性变换得到query, key, value
-        xq, xk, xv = self.wq(x), self.wk(x), self.wv(x)  # 各自: [1, 50, 512]
+        # xq, xk, xv = self.wq(x), self.wk(x), self.wv(x)  # 各自: [1, 50, 512]
+        xq = self.wq(x)  # Query：询问"我想知道什么"
+        xk = self.wk(x)  # Key：  回答"我能提供什么信息"
+        xv = self.wv(x)  # Value：具体的"信息内容"
 
         # 重塑为多头格式
         xq = xq.view(bz, seq_len, self.n_local_heads, self.head_dim)  # [1, 50, 8, 64]
@@ -123,7 +126,7 @@ class Attention(nn.Module):
 
         # 应用因果掩码（如果提供）
         if mask is not None:
-            scores = scores + mask  # 广播加法
+            scores = scores + mask  # -inf的位置会被"屏蔽"
 
         # 计算注意力权重
         scores = F.softmax(scores.float(), dim=-1).type_as(
@@ -133,7 +136,7 @@ class Attention(nn.Module):
         # 应用注意力权重到values
         output = torch.matmul(scores, values)  # [1, 8, 50, 64]
 
-        # 转置并重塑回原始格式
+        # 合并多头
         output = (
             output.transpose(1, 2).contiguous().view(bz, seq_len, -1)
         )  # [1, 50, 512]

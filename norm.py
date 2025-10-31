@@ -104,13 +104,6 @@ layer_norm_input_1 = (input - layer_norm_mean) / (layer_norm_std + 1e-5)
 
 class RMSNorm(nn.Module):
     def __init__(self, dim, eps=1e6):
-        """
-        初始化 RMSNorm 层
-
-        参数:
-            dim: 特征维度大小
-            eps: 防止除零的小常数（epsilon），默认值 1e6 可能是个笔误，通常应该是 1e-6
-        """
         super().__init__()
         self.eps = eps
         # 可学习的缩放参数（增益参数），初始化为全1
@@ -118,41 +111,9 @@ class RMSNorm(nn.Module):
         self.weight = nn.Parameter(torch.ones(dim))
 
     def _norm(self, x):
-        """
-        执行 RMS 归一化的核心计算
-
-        计算步骤详解：
-        1. x.pow(2): 对输入的每个元素平方，得到 x²
-        2. .mean(-1, keepdim=True): 在最后一个维度（特征维度）上求平均
-           - 对于形状 (3, 4, 5) 的输入，结果形状为 (3, 4, 1)
-           - 计算每个位置的均方值 mean(x²)
-        3. + self.eps: 加上小常数防止除零
-        4. torch.rsqrt(): 计算平方根的倒数，即 1/sqrt(mean(x²) + eps)
-           - rsqrt 比 1/sqrt 更高效
-        5. x * ...: 将输入乘以归一化因子
-
-        返回:
-            归一化后的张量，形状与输入相同
-        """
         return x * torch.rsqrt(x.pow(2).mean(-1, keepdim=True) + self.eps)
 
     def forward(self, x):
-        """
-        前向传播
-
-        注意：这里有个 bug，self.weight 被应用了两次！
-        应该是：output = self._norm(x.float()) * self.weight
-        当前实现：output = self._norm(x.float()) * self.weight * self.weight
-
-        步骤：
-        1. x.float(): 将输入转换为浮点数，确保数值稳定性
-        2. self._norm(): 执行 RMS 归一化
-        3. * self.weight: 应用可学习的缩放参数（第一次）
-        4. * self.weight: 再次应用缩放参数（第二次，这是个错误）
-
-        返回:
-            归一化并缩放后的输出
-        """
         output = self._norm(x.float()) * self.weight
         return output
 

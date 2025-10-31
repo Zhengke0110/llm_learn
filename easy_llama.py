@@ -11,16 +11,16 @@ import torch.nn.functional as F
 
 @dataclass
 class ModelArgs:
-    dim: int = 4096
-    n_layers: int = 2
-    n_heads: int = 8
+    dim: int = 4096  # 每个词的向量维度（词的"DNA长度"）
+    n_layers: int = 2  # Transformer层数（处理的层数）
+    n_heads: int = 8  # 注意力头数量
     n_kv_heads: Optional[int] = None
-    vocab_size: int = 1000
+    vocab_size: int = 1000  # 词汇表大小
     multiple_of: int = 256
     ffn_dim_multiplier: Optional[float] = None
     norm_eps: float = 1e-5
     max_batch_size: int = 32
-    max_seq_len: int = 2048
+    max_seq_len: int = 2048  # 最大序列长度
 
 
 class TransformerBlock(nn.Module):
@@ -69,7 +69,7 @@ class Transformer(nn.Module):
         )
 
     def forward(self, tokens, start_pos):
-        bsz, seq_len = tokens.size()
+        bsz, seq_len = tokens.size()  # bsz=2（2个句子），seq_len=200（每句200个词）
 
         h = self.tok_embeddings(tokens)
         freqs_cis = self.freqs_cis[start_pos : start_pos + seq_len]
@@ -78,7 +78,6 @@ class Transformer(nn.Module):
         if seq_len > 1:
             mask = torch.full((seq_len, seq_len), float("-inf"))
             mask = torch.triu(mask, diagonal=1)
-
             mask = torch.hstack([torch.zeros((seq_len, start_pos)), mask])
 
         for layer in self.layers:
